@@ -18,9 +18,9 @@ export class Customer {
     totalSpent: string;// Total amount spent (to determine if he is a VIP or not)
 
     @Column({default: 'natural'})
-    lastStetiment: string; // Last impression left by the customer (will be spoken automatically by AI)
+    lastSentiment: string; // Last impression left by the customer (will be spoken automatically by AI)
 
 
     @CreateDateColumn()
-    craetedAt: Date; // Date you first contacted us
+    createdAt: Date; // Date you first contacted us
 }
