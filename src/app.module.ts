@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomersModule } from './customers/customers.module';
 import { Customer } from './customers/customer.entity';
+import { InteractionsModule } from './interactions/interactions.module';
+import { Interactions } from './interactions/interaction.entity';
 
 
 @Module({
@@ -21,12 +23,14 @@ import { Customer } from './customers/customer.entity';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [Customer],
+        entities: [Customer, Interactions],
         synchronize: true,
       })
     }),
 
-    CustomersModule
+    CustomersModule,
+
+    InteractionsModule
   ]
 })
 export class AppModule {}
