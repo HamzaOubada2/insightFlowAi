@@ -5,6 +5,8 @@ import { CustomersModule } from './customers/customers.module';
 import { Customer } from './customers/customer.entity';
 import { InteractionsModule } from './interactions/interactions.module';
 import { Interactions } from './interactions/interaction.entity';
+import { TelegramModule } from './telegram/telegram.module';
+import { TelegrafModule } from 'nestjs-telegraf';
 
 
 @Module({
@@ -28,9 +30,16 @@ import { Interactions } from './interactions/interaction.entity';
       })
     }),
 
+    TelegrafModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => ({
+        token: config.get<string>('TELEGRAM_TOKEN')!, // علامة ! تعني "أنا أضمن لك أنه موجود"
+      }),
+      inject: [ConfigService],
+    }),
     CustomersModule,
-
-    InteractionsModule
+    InteractionsModule,
+    TelegramModule
   ]
 })
 export class AppModule {}
