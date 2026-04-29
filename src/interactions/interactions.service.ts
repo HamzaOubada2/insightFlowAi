@@ -14,10 +14,12 @@ export class InteractionsService {
     ){}
 
     // Link Text with user and save in table interactions
-    async create(content: string, customer:Customer) {
+    async create(content: string, customer: Customer, analysis: any) {
         const interaction = this.interactionRepo.create({
-            content, 
+            content,
             customer,
+            aiAnalyse: analysis,
+            status: 'completed'
         });
             return await this.interactionRepo.save(interaction);
     }

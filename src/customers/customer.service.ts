@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Customer } from "./customer.entity";
 import { Repository } from "typeorm";
+import { serialize } from "v8";
 
 
 @Injectable()
@@ -26,5 +27,18 @@ export class CustomerService {
             console.log(`[Database] New Customer registered: ${fullName}`)
         }
         return customer;
+    }
+
+    async updateSentiment(id:string, sentiment: string) {
+        if(!sentiment) {
+            console.log(`[Warning] Sentiment is undefined, skipping update`)
+        }
+        return await this.customerRepo.update(id, {
+            lastSentiment: sentiment.toString().toLowerCase()
+        })
+    }
+
+    async findAll() {
+        return await this.customerRepo.find();
     }
 }

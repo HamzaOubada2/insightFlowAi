@@ -7,6 +7,8 @@ import { InteractionsModule } from './interactions/interactions.module';
 import { Interactions } from './interactions/interaction.entity';
 import { TelegramModule } from './telegram/telegram.module';
 import { TelegrafModule } from 'nestjs-telegraf';
+import { AiModule } from './ai/ai.module';
+import { CustomerController } from './customers/customer.controller';
 
 
 @Module({
@@ -39,7 +41,9 @@ import { TelegrafModule } from 'nestjs-telegraf';
     }),
     CustomersModule,
     InteractionsModule,
-    TelegramModule
-  ]
+    TelegramModule,
+    AiModule
+  ],
+  controllers: [CustomerController]
 })
 export class AppModule {}

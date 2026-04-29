@@ -6,9 +6,10 @@ import { Customer } from 'src/customers/customer.entity';
 import { CustomerService } from 'src/customers/customer.service';
 import { CustomersModule } from 'src/customers/customers.module';
 import { InteractionsModule } from 'src/interactions/interactions.module';
+import { AiModule } from 'src/ai/ai.module';
 
 @Module({
-  imports: [CustomersModule, InteractionsModule],
+  imports: [CustomersModule, InteractionsModule, AiModule],
   providers: [TelegramService, TelegramUpdate],
 })
 export class TelegramModule {}
