@@ -32,27 +32,24 @@ export class TelegramUpdate {
         const message = ctx.message as any;
 
         try {
-            // 1. جلب أو إنشاء الزبون
+            // get oe create the customer based on the telegram id and name
             const customer = await this.customerService.findOrCreate(
                 message.from.id.toString(),
                 message.from.first_name,
             );
 
-            // 2. تحليل الرسالة باستخدام Groq
+            // 2. analyze the message content using the AiService (groq)
             console.log(`[AI] Analyzing message from ${customer.fullName}...`);
             const analysis = await this.aiService.analyzeMessage(message.text);
 
-            // 3. حفظ الرسالة مع التحليل في جدول الـ Interactions
+            // 3. save the interaction in the database with the analysis results
             await this.interactionsService.create(message.text, customer, analysis);
 
-            // --- اuلتعديل الجوهري هنا لضمان عدم الانهيار ---
-            // نتحقق من كل الاحتمالات لاسم الحقل (sentiment أو Sentiment) ونضع قيمة افتراضية
             const extractedSentiment = analysis?.sentiment || analysis?.Sentiment || 'neutral';
 
-            // 4. تحديث حالة الزبون الأخيرة باستخدام القيمة المستخرجة
+            // 4. update the customer's latest status using the extracted value (e.g., sentiment)
             await this.customerService.updateSentiment(customer.id, extractedSentiment);
 
-            // 5. بناء الرد بناءً على التحليل (استخدام القيمة الآمنة أيضاً هنا)
             let response = `Thank You ${customer.fullName}, your message has been received!`;
             
             if (extractedSentiment.toLowerCase() === 'angry') {
