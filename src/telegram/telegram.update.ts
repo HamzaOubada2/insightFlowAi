@@ -1,3 +1,6 @@
+import axios from "axios";
+import { error } from "console";
+import * as fs from 'fs';
 import { Ctx, On, Start, Update } from "nestjs-telegraf";
 import { AiService } from "src/ai/ai.service";
 import { CustomerService } from "src/customers/customer.service";
@@ -68,9 +71,63 @@ export class TelegramUpdate {
     }
 
 
-    @On('voice')
-    async onVoice(@Ctx() ctx: Context) {
-        await ctx.reply('I have sent an audio recording; I will convert it to text soon.')
+    private async processUserMessage(ctx: Context, text: string, from: any) {
+    try {
+        // 1. جلب أو إنشاء الزبون
+        const customer = await this.customerService.findOrCreate(
+            from.id.toString(),
+            from.first_name,
+        );
+
+        // 2. تحليل النص عبر AI
+        const analysis = await this.aiService.analyzeMessage(text);
+
+        // 3. حفظ التفاعل وتحديث الحالة
+        await this.interactionsService.create(text, customer, analysis);
+        const sentiment = analysis?.sentiment || analysis?.Sentiment || 'neutral';
+        await this.customerService.updateSentiment(customer.id, sentiment);
+
+        // 4. الرد على المستخدم
+        let response = `Thank You ${customer.fullName}, your message has been received!`;
+        if (sentiment.toLowerCase() === 'angry') {
+            response = `We apologize ${customer.fullName}, our team will help you immediately! 🛠️`;
+        }
+
+        await ctx.reply(response);
+        console.log(`[Database] Success:`, analysis);
+
+    } catch (error) {
+        console.error('[Error] Processing failed:', error);
+        await ctx.reply('Sorry, I had trouble processing that.');
     }
+}
+
+@On('voice')
+async onVoice(@Ctx() ctx: Context) {
+    const message = ctx.message as any;
+    const fileId = message.voice.file_id;
+
+    try {
+        const fileLink = await ctx.telegram.getFileLink(fileId);
+        const filePath = `./temp_${fileId}.ogg`;
+
+        // تحميل الملف
+        const response = await axios({ url: fileLink.href, responseType: 'stream' });
+        await new Promise((resolve, reject) => {
+            response.data.pipe(fs.createWriteStream(filePath)).on('finish', resolve).on('error', reject);
+        });
+
+        const transcribedText = await this.aiService.transcribeAudio(filePath);
+        await ctx.reply(`📝 *Transcription:* ${transcribedText}`, { parse_mode: 'Markdown' });
+
+        // نرسل الـ ctx الحقيقي مع النص المستخرج
+        await this.processUserMessage(ctx, transcribedText, message.from);
+
+        fs.unlinkSync(filePath);
+    } catch (error) {
+        console.error('Voice Error:', error);
+    }
+}
+
 }
 // ctx: It gives you the context of the message.

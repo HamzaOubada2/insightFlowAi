@@ -25,6 +25,8 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.1",
+    "axios": "^1.15.2",
+    "form-data": "^4.0.5",
     "groq-sdk": "^1.1.2",
     "mysql2": "^3.22.3",
     "nestjs-telegraf": "^2.9.1",

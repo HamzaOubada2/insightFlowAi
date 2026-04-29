@@ -15,12 +15,13 @@ export class InteractionsService {
 
     // Link Text with user and save in table interactions
     async create(content: string, customer: Customer, analysis: any) {
-        const interaction = this.interactionRepo.create({
+        const newInteraction = this.interactionRepo.create({
             content,
             customer,
-            aiAnalyse: analysis,
-            status: 'completed'
+            aiAnalyse: analysis
         });
-            return await this.interactionRepo.save(interaction);
+        const savedResult = await this.interactionRepo.save(newInteraction);
+        console.log('✅ Entry Saved to DB with ID:', savedResult.id);
+        return savedResult;
     }
 }
