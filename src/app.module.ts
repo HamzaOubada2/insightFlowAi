@@ -33,7 +33,7 @@ import { TelegrafModule } from 'nestjs-telegraf';
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
-        token: config.get<string>('TELEGRAM_TOKEN')!, // علامة ! تعني "أنا أضمن لك أنه موجود"
+        token: config.get<string>('TELEGRAM_TOKEN')!,
       }),
       inject: [ConfigService],
     }),

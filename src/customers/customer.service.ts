@@ -13,6 +13,7 @@ export class CustomerService {
     ){}
 
 
+    // check if user exit in database if not create
     async findOrCreate(phoneNumber:string, fullName:string): Promise<Customer> {
         let customer = await this.customerRepo.findOne({where: {phoneNumber}});
 

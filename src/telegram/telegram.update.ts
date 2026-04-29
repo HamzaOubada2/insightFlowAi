@@ -13,7 +13,9 @@ export class TelegramUpdate {
 
     @Start()
     async onStart(@Ctx() ctx: Context) {
-        const from = ctx.from;
+        const from = ctx.from; // extract the data to who click start
+
+        
         // Save or featch the customer when pressin start
         await this.customerService.findOrCreate(
             from?.id.toString()!,
